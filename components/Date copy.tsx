@@ -22,6 +22,12 @@ interface TooltipIconProps {
   ) => void; // Make onChange prop optional
 }
 
+// Define the prop types for Date component
+interface DateProps {
+  dataHandler: (note: any, status: boolean) => void;
+  params: string;
+}
+
 function TooltipIcon({ title, placeholder, onChange }: TooltipIconProps) {
   const rightSection = (
     <Tooltip
@@ -54,7 +60,7 @@ function TooltipIcon({ title, placeholder, onChange }: TooltipIconProps) {
   );
 }
 
-export default function Date({ dataHandler, params }) {
+export default function Date({ dataHandler, params }: DateProps) {
   const [value, setValue] = useState<Date | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -81,13 +87,11 @@ export default function Date({ dataHandler, params }) {
       })
       .then((data) => {
         dataHandler(data.note, true);
-        // console.log(data);
 
         // Reset form values and state
         setTitle("");
         setDescription("");
         setValue(null);
-        // setAddingNote(false);
       })
       .catch((error) => {
         console.error("Error:", error);

@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState } from "react";
 import {
   TextInput,
@@ -18,12 +16,19 @@ import { useForm } from "@mantine/form";
 import classes from "./AuthenticationTitle.module.css";
 import { useRouter } from "next/navigation";
 
+interface FormValues {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 export function AuthenticationTitle() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const router = useRouter();
 
-  const form = useForm({
+  const form = useForm<FormValues>({
     initialValues: {
       name: "",
       email: "",
@@ -42,7 +47,7 @@ export function AuthenticationTitle() {
     },
   });
 
-  const handleSubmit = async (values) => {
+  const handleSubmit = async (values: FormValues) => {
     setLoading(true);
     setMessage("");
 
@@ -68,7 +73,6 @@ export function AuthenticationTitle() {
       } else {
         setMessage("Sign up failed. Please try again.");
         console.log("no");
-        
       }
     } catch (error) {
       setMessage("Sign up failed. Please try again.");

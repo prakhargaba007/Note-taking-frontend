@@ -1,17 +1,21 @@
 "use client";
-import { Menu, Group, ActionIcon, rem } from "@mantine/core";
+import { Menu, Group, ActionIcon, rem, Modal, Button } from "@mantine/core";
 import { IconDots } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
-import { Modal, Button } from "@mantine/core";
-// import { useRouter } from "next/router";
 import Date from "./Date copy";
 import { useRouter } from "next/navigation";
 
-export function UserMenu({ dataHandlers, params }) {
+interface UserMenuProps {
+  dataHandlers: (data: any) => void; // Adjust the type of data if possible
+  params: string; // Adjust the type if `params` is not a string
+}
+
+export function UserMenu({ dataHandlers, params }: UserMenuProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const router = useRouter();
 
-  function dataHandler(data, isClose) {
+  function dataHandler(data: any, isClose: boolean) {
+    // Adjust the type of data if possible
     dataHandlers(data);
     if (isClose) {
       close();

@@ -14,9 +14,23 @@ import classes from "./BadgeCard.module.css";
 import { IconDots } from "@tabler/icons-react";
 import { UserMenu } from "./UserMenu";
 
-export function BadgeCard({ params }) {
+interface BadgeCardProps {
+  params: string; // Adjust the type if `params` is not a string
+}
+
+interface NoteData {
+  title: string;
+  description: string;
+  date: string;
+}
+
+export function BadgeCard({ params }: BadgeCardProps) {
   const theme = useMantineTheme();
-  const [data, setData] = useState({ title: "", description: "", date: "" });
+  const [data, setData] = useState<NoteData>({
+    title: "",
+    description: "",
+    date: "",
+  });
 
   useEffect(() => {
     // Fetch data from the API
@@ -31,7 +45,7 @@ export function BadgeCard({ params }) {
       });
   }, [params]);
 
-  function dataHandlers(data: Object) {
+  function dataHandlers(data: NoteData) {
     console.log(data);
     setData(data);
   }
