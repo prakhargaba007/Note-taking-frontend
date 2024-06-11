@@ -12,7 +12,7 @@
   ); */
   background-color: rgb(197, 197, 197);
   gap: 20px;
-  width: 50%;
+  /* width: 50%; */
   margin-bottom: var(--mantine-spacing-sm);
 }
 

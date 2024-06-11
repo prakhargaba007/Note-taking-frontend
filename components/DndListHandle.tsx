@@ -8,14 +8,33 @@ import { IconGripVertical } from "@tabler/icons-react";
 import classes from "./DndListHandle.module.css";
 import Link from "next/link";
 
-export function DndListHandle({ note }) {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [state, handlers] = useListState(data);
+interface Note {
+  _id: string;
+  title: string;
+  date: string;
+}
+
+interface DndListHandleProps {
+  note: Note;
+}
+
+export function DndListHandle({ note }: DndListHandleProps) {
+  const [data, setData] = useState<Note[]>([]); // Explicit type annotation for data
+  const [loading, setLoading] = useState<boolean>(true); // Explicit type annotation for loading
+  const [state, handlers] = useListState<Note>([]); // Explicitly providing the generic type Note to useListState
+  // console.log(state);
+
+  const token = localStorage.getItem("token");
+  // console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
 
   useEffect(() => {
     // Fetch data from the API
-    fetch("http://localhost:8080/feed/notes")
+
+    fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/feed/notes", {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    })
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -25,6 +44,9 @@ export function DndListHandle({ note }) {
       .then((jsonData) => {
         setData(jsonData.notes);
         handlers.setState(jsonData.notes);
+        // console.log(state);
+        console.log(jsonData);
+
         setLoading(false);
       })
       .catch((error) => {
@@ -37,19 +59,19 @@ export function DndListHandle({ note }) {
     const prepend = () => handlers.prepend(note);
     prepend();
 
-    console.log(note);
-    console.log(state);
+    // console.log(note);
+    // console.log(state);
   }, [note]);
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
-  if (data.length === 0) {
+  if (state.length === 0) {
     return <div>No data found.</div>;
   }
 
-  const items = state.map((item, index) => (
+  const items = state.map((item: Note, index) => (
     <Draggable key={item._id} index={index} draggableId={item._id}>
       {(provided, snapshot) => (
         <div
@@ -70,7 +92,7 @@ export function DndListHandle({ note }) {
           </Link>
           <Link href={`/${item._id}`}>
             <div>
-              <Text>{item.description}</Text>
+              <Text>{item.title}</Text>
               <Text c="dimmed" size="sm">
                 Date: {item.date}
               </Text>

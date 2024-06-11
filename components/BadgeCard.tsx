@@ -1,17 +1,7 @@
 "use client";
-import {
-  Card,
-  Text,
-  Group,
-  Badge,
-  ActionIcon,
-  Menu,
-  useMantineTheme,
-  rem,
-} from "@mantine/core";
+import { Card, Text, Group, Badge, useMantineTheme } from "@mantine/core";
 import { useEffect, useState } from "react";
 import classes from "./BadgeCard.module.css";
-import { IconDots } from "@tabler/icons-react";
 import { UserMenu } from "./UserMenu";
 
 interface BadgeCardProps {
@@ -32,18 +22,28 @@ export function BadgeCard({ params }: BadgeCardProps) {
     date: "",
   });
 
+  // Check if localStorage is available before using it
+  let token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
   useEffect(() => {
-    // Fetch data from the API
-    fetch(`http://localhost:8080/feed/note/${params}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setData(data.note);
-        console.log(data.note);
+    // Only fetch data if token is available
+    if (token) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/feed/note/${params}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
       })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, [params]);
+        .then((response) => response.json())
+        .then((data) => {
+          setData(data.note);
+          console.log(data.note);
+        })
+        .catch((error) => {
+          console.error("Error fetching data:", error);
+        });
+    }
+  }, [params, token]);
 
   function dataHandlers(data: NoteData) {
     console.log(data);
@@ -53,21 +53,23 @@ export function BadgeCard({ params }: BadgeCardProps) {
   const { title, description, date } = data;
 
   return (
-    <Card withBorder radius="md" p="md" className={classes.card}>
-      <Card.Section className={classes.section} mt="md">
-        <Group justify="apart">
-          <Text fz="lg" fw={500}>
-            {title}
+    <div className={classes.container}>
+      <Card withBorder radius="md" p="md" className={classes.card}>
+        <Card.Section className={classes.section} mt="md">
+          <Group justify="apart">
+            <Text fz="lg" fw={500}>
+              {title}
+            </Text>
+            <Badge size="sm" variant="light">
+              {date}
+            </Badge>
+            <UserMenu dataHandlers={dataHandlers} params={params} />
+          </Group>
+          <Text fz="sm" mt="xs">
+            {description}
           </Text>
-          <Badge size="sm" variant="light">
-            {date}
-          </Badge>
-          <UserMenu dataHandlers={dataHandlers} params={params} />
-        </Group>
-        <Text fz="sm" mt="xs">
-          {description}
-        </Text>
-      </Card.Section>
-    </Card>
+        </Card.Section>
+      </Card>
+    </div>
   );
 }

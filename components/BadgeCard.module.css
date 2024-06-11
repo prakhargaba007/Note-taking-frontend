@@ -1,8 +1,13 @@
+.container {
+  display: flex;
+  justify-content: center;
+}
 .card {
   background-color: light-dark(
     var(--mantine-color-white),
     var(--mantine-color-dark-7)
   );
+  width: 50%;
 }
 
 .section {

@@ -13,6 +13,8 @@ interface UserMenuProps {
 export function UserMenu({ dataHandlers, params }: UserMenuProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const router = useRouter();
+  let token = localStorage.getItem("token");
+  console.log(token);
 
   function dataHandler(data: any, isClose: boolean) {
     // Adjust the type of data if possible
@@ -27,9 +29,12 @@ export function UserMenu({ dataHandlers, params }: UserMenuProps) {
       console.log(params);
 
       const response = await fetch(
-        `http://localhost:8080/feed/note/${params}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/feed/note/${params}`,
         {
           method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + token,
+          },
         }
       );
       if (response.ok) {

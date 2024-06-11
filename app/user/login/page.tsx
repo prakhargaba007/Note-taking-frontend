@@ -1,5 +1,5 @@
-import { AuthenticationTitle } from "@/components/authentication/AuthenticationTitle";
+import { AuthenticationTitlee } from "@/components/authentication/AuthenticationTitle copy";
 
 export default function a() {
-  return <AuthenticationTitle />;
+  return <AuthenticationTitlee />;
 }

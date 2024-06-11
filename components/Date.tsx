@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
 import {
   TextInput,
@@ -54,24 +54,42 @@ function TooltipIcon({ title, placeholder, onChange }: TooltipIconProps) {
   );
 }
 
-export default function Date({ dataHandler }) {
+interface Note {
+  title: string;
+  description: string;
+  date: string;
+}
+
+interface DateProps {
+  dataHandler: (note: Note) => void;
+}
+
+export default function Date({ dataHandler }: DateProps) {
   const [value, setValue] = useState<Date | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [addingNote, setAddingNote] = useState(false);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // New loading state
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   const handleSubmit = () => {
+    setLoading(true); // Set loading state to true when submitting
+
     const data = {
-      userId: "6666e8d001974bdb3ee61343",
       title: title,
       description: description,
       date: value?.toDateString() || "",
     };
 
-    fetch("http://localhost:8080/feed/note", {
+    fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/feed/note", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify(data),
     })
@@ -88,10 +106,12 @@ export default function Date({ dataHandler }) {
         setDescription("");
         setValue(null);
         setAddingNote(false);
+        setLoading(false); // Set loading state to false after successful submission
       })
       .catch((error) => {
         console.error("Error:", error);
         // Handle error
+        setLoading(false); // Set loading state to false after error
       });
   };
 
@@ -128,16 +148,16 @@ export default function Date({ dataHandler }) {
             value={value}
             onChange={setValue}
           />
-          <Button onClick={handleSubmit} variant="outline">
-            Submit
+          <Button onClick={handleSubmit} variant="outline" disabled={loading}>
+            {loading ? "Submitting..." : "Submit"}
           </Button>
-          <Button onClick={handleCancel} variant="outline">
+          <Button onClick={handleCancel} variant="outline" disabled={loading}>
             Cancel
           </Button>
         </>
       ) : (
-        <Button onClick={handleAddNote} variant="outline">
-          Add Note
+        <Button onClick={handleAddNote} variant="outline" disabled={loading}>
+          {loading ? "Adding Note..." : "Add Note"}
         </Button>
       )}
     </div>

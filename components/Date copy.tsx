@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DatePickerInput } from "@mantine/dates";
 import {
   TextInput,
@@ -64,6 +64,11 @@ export default function Date({ dataHandler, params }: DateProps) {
   const [value, setValue] = useState<Date | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [token, setToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setToken(localStorage.getItem("token"));
+  }, []);
 
   const handleSubmit = () => {
     const data = {
@@ -72,10 +77,11 @@ export default function Date({ dataHandler, params }: DateProps) {
       date: value?.toDateString() || "",
     };
 
-    fetch(`http://localhost:8080/feed/note/${params}`, {
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/feed/note/${params}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
       },
       body: JSON.stringify(data),
     })

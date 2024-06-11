@@ -1,9 +1,8 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import {
   TextInput,
   PasswordInput,
-  Checkbox,
   Anchor,
   Paper,
   Title,
@@ -15,68 +14,57 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import classes from "./AuthenticationTitle.module.css";
-import { useRouter } from "next/navigation";
 
 interface FormValues {
-  name: string;
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
-export function AuthenticationTitle() {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const router = useRouter();
+export function AuthenticationTitlee() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     initialValues: {
-      name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
-
     validate: {
-      name: (value) =>
-        value.length < 2 ? "Name must have at least 2 characters" : null,
-      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+      email: (value) => (/^\S+@\S+\.\S+$/.test(value) ? null : "Invalid email"),
       password: (value) =>
-        value.length < 6 ? "Password must have at least 6 characters" : null,
-      confirmPassword: (value, values) =>
-        value !== values.password ? "Passwords do not match" : null,
+        value.length > 6 ? null : "Password must be at least 7 characters",
     },
   });
 
   const handleSubmit = async (values: FormValues) => {
     setLoading(true);
-    setMessage("");
+    setMessage(null);
 
     try {
-      const response = await fetch("http://localhost:8080/auth/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: values.name,
-          email: values.email,
-          password: values.password,
-        }),
-      });
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
+
+      const data = await response.json();
 
       if (response.ok) {
-        setMessage("Sign up successful!");
-        setTimeout(() => {
-          router.push("/login");
-        }, 1500); // Delay to show success message before redirect
-        console.log("ok");
+        setMessage("Login successful!");
+        // Store the token and user ID in local storage
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.userId);
+        window.location.href = "/";
       } else {
-        setMessage("Sign up failed. Please try again.");
-        console.log("no");
+        setMessage(data.message || "Login failed");
       }
     } catch (error) {
-      setMessage("Sign up failed. Please try again.");
+      setMessage("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -95,16 +83,14 @@ export function AuthenticationTitle() {
       </Text>
 
       <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-        <form onSubmit={form.onSubmit((values) => handleSubmit(values))}>
-          <TextInput
-            label="Name"
-            placeholder="Your name"
-            required
-            {...form.getInputProps("name")}
-          />
+        <form
+          onSubmit={form.onSubmit((values) => {
+            handleSubmit(values);
+          })}
+        >
           <TextInput
             label="Email"
-            placeholder="you@mantine.dev"
+            placeholder="you@example.com"
             required
             mt="md"
             {...form.getInputProps("email")}
@@ -116,21 +102,18 @@ export function AuthenticationTitle() {
             mt="md"
             {...form.getInputProps("password")}
           />
-          <PasswordInput
-            label="Confirm Password"
-            placeholder="Confirm your password"
-            required
-            mt="md"
-            {...form.getInputProps("confirmPassword")}
-          />
-          <Group justify="space-between" mt="lg">
-            <p></p>
-            <Anchor component="button" size="sm">
+          <Group mt="lg">
+            <Anchor
+              component="button"
+              size="sm"
+              style={{ marginRight: "auto" }}
+            >
               Forgot password?
             </Anchor>
           </Group>
+
           <Button type="submit" fullWidth mt="xl" disabled={loading}>
-            {loading ? "Signing up..." : "Sign up"}
+            {loading ? "Logging in..." : "Log in"}
           </Button>
           {message && (
             <Notification
