@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useState, useEffect } from "react";
 import cx from "clsx";
 import { rem, Text } from "@mantine/core";
@@ -18,17 +18,31 @@ interface DndListHandleProps {
   note: Note;
 }
 
-export function DndListHandle({ note }: DndListHandleProps) {
-  const [data, setData] = useState<Note[]>([]); // Explicit type annotation for data
-  const [loading, setLoading] = useState<boolean>(true); // Explicit type annotation for loading
-  const [state, handlers] = useListState<Note>([]); // Explicitly providing the generic type Note to useListState
-  // console.log(state);
+const formatDate = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      throw new Error("Invalid date string");
+    }
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(date);
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid Date";
+  }
+};
 
-  const token = localStorage.getItem("token");
-  // console.log(process.env.NEXT_PUBLIC_BACKEND_URL);
+export function DndListHandle({ note }: DndListHandleProps) {
+  const [data, setData] = useState<Note[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [state, handlers] = useListState<Note>([]);
 
   useEffect(() => {
-    // Fetch data from the API
+    let token = localStorage.getItem("token");
+    if (!token) return;
 
     fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/feed/notes", {
       headers: {
@@ -44,9 +58,6 @@ export function DndListHandle({ note }: DndListHandleProps) {
       .then((jsonData) => {
         setData(jsonData.notes);
         handlers.setState(jsonData.notes);
-        // console.log(state);
-        console.log(jsonData);
-
         setLoading(false);
       })
       .catch((error) => {
@@ -54,13 +65,9 @@ export function DndListHandle({ note }: DndListHandleProps) {
         setLoading(false);
       });
   }, []);
-  useEffect(() => {
-    // Perform actions after state update
-    const prepend = () => handlers.prepend(note);
-    prepend();
 
-    // console.log(note);
-    // console.log(state);
+  useEffect(() => {
+    handlers.prepend(note);
   }, [note]);
 
   if (loading) {
@@ -88,13 +95,10 @@ export function DndListHandle({ note }: DndListHandleProps) {
             />
           </div>
           <Link href={`/${item._id}`}>
-            <Text className={classes.symbol}>{item.title}</Text>
-          </Link>
-          <Link href={`/${item._id}`}>
             <div>
-              <Text>{item.title}</Text>
+              <Text size="md">{item.title}</Text>
               <Text c="dimmed" size="sm">
-                Date: {item.date}
+                Date: {formatDate(item.date)}
               </Text>
             </div>
           </Link>

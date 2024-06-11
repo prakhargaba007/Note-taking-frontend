@@ -13,7 +13,9 @@ interface UserMenuProps {
 export function UserMenu({ dataHandlers, params }: UserMenuProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const router = useRouter();
-  let token = localStorage.getItem("token");
+  // let token = localStorage.getItem("token");
+  let token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
   console.log(token);
 
   function dataHandler(data: any, isClose: boolean) {

@@ -64,11 +64,13 @@ export default function Date({ dataHandler, params }: DateProps) {
   const [value, setValue] = useState<Date | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [token, setToken] = useState<string | null>(null);
+  // const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
+  // useEffect(() => {
+  //   setToken(localStorage.getItem("token"));
+  // }, []);
+  let token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const handleSubmit = () => {
     const data = {

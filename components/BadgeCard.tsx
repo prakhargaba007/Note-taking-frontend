@@ -14,6 +14,22 @@ interface NoteData {
   date: string;
 }
 
+// Utility function to format the date
+const formatDate = (dateString: string) => {
+  if (!dateString) {
+    return "Invalid date"; // Handle empty or undefined date strings
+  }
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) {
+    return "Invalid date"; // Handle invalid date objects
+  }
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(date);
+};
+
 export function BadgeCard({ params }: BadgeCardProps) {
   const theme = useMantineTheme();
   const [data, setData] = useState<NoteData>({
@@ -21,10 +37,15 @@ export function BadgeCard({ params }: BadgeCardProps) {
     description: "",
     date: "",
   });
+  const [token, setToken] = useState<string | null>(null);
 
-  // Check if localStorage is available before using it
-  let token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  useEffect(() => {
+    // Only fetch the token on the client side
+    if (typeof window !== "undefined") {
+      const storedToken = localStorage.getItem("token");
+      setToken(storedToken);
+    }
+  }, []);
 
   useEffect(() => {
     // Only fetch data if token is available
@@ -61,7 +82,7 @@ export function BadgeCard({ params }: BadgeCardProps) {
               {title}
             </Text>
             <Badge size="sm" variant="light">
-              {date}
+              {formatDate(date)}
             </Badge>
             <UserMenu dataHandlers={dataHandlers} params={params} />
           </Group>

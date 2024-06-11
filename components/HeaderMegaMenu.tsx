@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Group,
   Button,
@@ -22,8 +22,19 @@ export function HeaderMegaMenu() {
   const theme = useMantineTheme();
 
   const isLoggedIn =
-    localStorage.getItem("userId") && localStorage.getItem("token");
+    typeof window !== "undefined" &&
+    localStorage.getItem("userId") &&
+    localStorage.getItem("token");
   console.log(isLoggedIn);
+
+  useEffect(() => {
+    // Perform localStorage-related operations only when running on the client
+    if (typeof window !== "undefined") {
+      const isLoggedIn =
+        localStorage.getItem("userId") && localStorage.getItem("token");
+      console.log(isLoggedIn);
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userId");

@@ -69,12 +69,14 @@ export default function Date({ dataHandler }: DateProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [addingNote, setAddingNote] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
+  // const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false); // New loading state
 
-  useEffect(() => {
-    setToken(localStorage.getItem("token"));
-  }, []);
+  // useEffect(() => {
+  //   setToken(localStorage.getItem("token"));
+  // }, []);
+  let token =
+    typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
   const handleSubmit = () => {
     setLoading(true); // Set loading state to true when submitting

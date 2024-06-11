@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextInput,
   PasswordInput,
@@ -23,6 +23,11 @@ interface FormValues {
 export function AuthenticationTitlee() {
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -56,9 +61,11 @@ export function AuthenticationTitlee() {
 
       if (response.ok) {
         setMessage("Login successful!");
-        // Store the token and user ID in local storage
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("userId", data.userId);
+        if (isClient) {
+          // Store the token and user ID in local storage
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("userId", data.userId);
+        }
         window.location.href = "/";
       } else {
         setMessage(data.message || "Login failed");
