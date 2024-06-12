@@ -59,14 +59,17 @@ export function AuthenticationTitlee() {
 
       const data = await response.json();
 
+      console.log(data);
       if (response.ok) {
-        setMessage("Login successful!");
-        if (isClient) {
+        if (data.token && data.userId) {
           // Store the token and user ID in local storage
+          setMessage("Login successful!");
           localStorage.setItem("token", data.token);
           localStorage.setItem("userId", data.userId);
+          window.location.href = "/";
+        } else {
+          setMessage(data.error || "Login failed");
         }
-        window.location.href = "/";
       } else {
         setMessage(data.message || "Login failed");
       }
@@ -125,6 +128,7 @@ export function AuthenticationTitlee() {
           {message && (
             <Notification
               mt="md"
+              onClose={() => setMessage(null)}
               color={message.includes("successful") ? "teal" : "red"}
             >
               {message}

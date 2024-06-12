@@ -58,7 +58,7 @@ export function BadgeCard({ params }: BadgeCardProps) {
         .then((response) => response.json())
         .then((data) => {
           setData(data.note);
-          console.log(data.note);
+          // console.log(data.note);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
@@ -67,7 +67,7 @@ export function BadgeCard({ params }: BadgeCardProps) {
   }, [params, token]);
 
   function dataHandlers(data: NoteData) {
-    console.log(data);
+    // console.log(data);
     setData(data);
   }
 

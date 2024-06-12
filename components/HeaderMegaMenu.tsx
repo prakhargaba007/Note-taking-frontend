@@ -25,14 +25,14 @@ export function HeaderMegaMenu() {
     typeof window !== "undefined" &&
     localStorage.getItem("userId") &&
     localStorage.getItem("token");
-  console.log(isLoggedIn);
+  // console.log(isLoggedIn);
 
   useEffect(() => {
     // Perform localStorage-related operations only when running on the client
     if (typeof window !== "undefined") {
       const isLoggedIn =
         localStorage.getItem("userId") && localStorage.getItem("token");
-      console.log(isLoggedIn);
+      // console.log(isLoggedIn);
     }
   }, []);
 

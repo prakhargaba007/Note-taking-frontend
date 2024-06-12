@@ -16,7 +16,7 @@ export function UserMenu({ dataHandlers, params }: UserMenuProps) {
   // let token = localStorage.getItem("token");
   let token =
     typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  console.log(token);
+  // console.log(token);
 
   function dataHandler(data: any, isClose: boolean) {
     // Adjust the type of data if possible
@@ -28,7 +28,7 @@ export function UserMenu({ dataHandlers, params }: UserMenuProps) {
 
   const deleteNote = async () => {
     try {
-      console.log(params);
+      // console.log(params);
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/feed/note/${params}`,
