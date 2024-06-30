@@ -72,11 +72,9 @@ export function AuthenticationTitle() {
         setMessage("Sign up successful!");
         setTimeout(() => {
           router.push("/user/login");
-        }, 1500); // Delay to show success message before redirect
-        // console.log("ok");
+        }, 1500);
       } else {
         setMessage("Sign up failed. Please try again.");
-        // console.log("no");
       }
     } catch (error) {
       setMessage("Sign up failed. Please try again.");

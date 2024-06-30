@@ -27,14 +27,12 @@ export function HeaderMegaMenu() {
     localStorage.getItem("token");
   // console.log(isLoggedIn);
 
-  useEffect(() => {
-    // Perform localStorage-related operations only when running on the client
-    if (typeof window !== "undefined") {
-      const isLoggedIn =
-        localStorage.getItem("userId") && localStorage.getItem("token");
-      // console.log(isLoggedIn);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const isLoggedIn =
+  //       localStorage.getItem("userId") && localStorage.getItem("token");
+  //   }
+  // }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userId");
