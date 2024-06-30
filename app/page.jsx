@@ -1,35 +1,25 @@
 "use client";
-import Date from "@/components/Date";
-import { DndListHandle } from "@/components/DndListHandle";
+import { useEffect, useState } from "react";
 import LoginOrSignUpPage from "@/components/LoginOrSignUpPage";
 import classes from "./page.module.css";
 
-import { useEffect, useState } from "react";
-
-const displayMessage = (message, duration = 60000) => {
-  // alert(message);
-  // setTimeout(() => {
-  //   alert("Thank you for waiting!");
-  // }, duration);
-};
-
-// Display a message when the component mounts
-displayMessage("Kindly wait for one minute, gathering information....");
-
 export default function Home() {
-  const [note, setNote] = useState({});
-  const isLoggedIn =
-    typeof window !== "undefined" &&
-    !!localStorage.getItem("userId") &&
-    !!localStorage.getItem("token");
-
-  function dataHandler(data) {
-    setNote(data);
-  }
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/feed/")
+    const userId = localStorage.getItem("userId");
+    const token = localStorage.getItem("token");
+    if (userId && token) {
+      setIsLoggedIn(true);
+      fetch(process.env.NEXT_PUBLIC_BACKEND_URL + "/auth/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token,
+        },
+      })
         .then((response) => {
           if (!response.ok) {
             throw new Error("Failed to fetch data");
@@ -37,20 +27,34 @@ export default function Home() {
           return response.json();
         })
         .then((data) => {
-          // Process fetched data if needed
+          setData(data);
+          setIsLoading(false);
         })
         .catch((error) => {
           console.error("Error fetching data:", error);
+          setIsLoading(false);
         });
+    } else {
+      setIsLoading(false);
     }
   }, []);
+
+  if (isLoading) {
+    return (
+      <div className={classes.container}>
+        <h2>Loading...</h2>
+      </div>
+    );
+  }
 
   return (
     <div className={classes.container}>
       {isLoggedIn ? (
         <>
-          <Date dataHandler={dataHandler} />
-          <DndListHandle note={note} />
+          {!data && <h2>Loading...</h2>}
+          {data?.role === "user" && <h1>You are a user.</h1>}
+          {data?.role === "admin" && <h1>You are an admin.</h1>}
+          {data?.role === "delivery boy" && <h1>You are a delivery boy.</h1>}
         </>
       ) : (
         <LoginOrSignUpPage />

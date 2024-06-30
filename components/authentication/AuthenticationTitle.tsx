@@ -1,9 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextInput,
   PasswordInput,
-  Checkbox,
   Anchor,
   Paper,
   Title,
@@ -12,6 +11,7 @@ import {
   Group,
   Button,
   Notification,
+  Select,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import classes from "./AuthenticationTitle.module.css";
@@ -22,6 +22,7 @@ interface FormValues {
   email: string;
   password: string;
   confirmPassword: string;
+  role: string;
 }
 
 export function AuthenticationTitle() {
@@ -35,6 +36,7 @@ export function AuthenticationTitle() {
       email: "",
       password: "",
       confirmPassword: "",
+      role: "user", // Default role
     },
 
     validate: {
@@ -45,6 +47,10 @@ export function AuthenticationTitle() {
         value.length < 6 ? "Password must have at least 6 characters" : null,
       confirmPassword: (value, values) =>
         value !== values.password ? "Passwords do not match" : null,
+      role: (value) =>
+        ["user", "admin", "delivery boy"].includes(value)
+          ? null
+          : "Invalid role",
     },
   });
 
@@ -62,8 +68,9 @@ export function AuthenticationTitle() {
           },
           body: JSON.stringify({
             name: values.name,
-            email: values.email,
+            email: values.email.toLowerCase(),
             password: values.password,
+            role: values.role,
           }),
         }
       );
@@ -72,11 +79,9 @@ export function AuthenticationTitle() {
         setMessage("Sign up successful!");
         setTimeout(() => {
           router.push("/user/login");
-        }, 1500); // Delay to show success message before redirect
-        // console.log("ok");
+        }, 1500);
       } else {
         setMessage("Sign up failed. Please try again.");
-        // console.log("no");
       }
     } catch (error) {
       setMessage("Sign up failed. Please try again.");
@@ -125,6 +130,18 @@ export function AuthenticationTitle() {
             required
             mt="md"
             {...form.getInputProps("confirmPassword")}
+          />
+          <Select
+            label="Role"
+            placeholder="Select your role"
+            data={[
+              { value: "user", label: "User" },
+              { value: "admin", label: "Admin" },
+              { value: "delivery boy", label: "Delivery Boy" },
+            ]}
+            required
+            mt="md"
+            {...form.getInputProps("role")}
           />
           <Group justify="space-between" mt="lg">
             <p></p>
